@@ -39,6 +39,8 @@ dependencies:
   svg_flutter:
   intl:
   date_picker_timeline:
+  numberpicker:
+  carousel_slider:
 
 dev_dependencies:
   flutter_test:

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomInputField extends StatelessWidget {
   final TextEditingController controller;
-  final String labelText;
+  final String hintText;
   final Widget? sufix;
   final int maxLines;
   final int minLines;
@@ -10,7 +10,7 @@ class CustomInputField extends StatelessWidget {
   const CustomInputField(
       {super.key,
       required this.controller,
-      required this.labelText,
+      required this.hintText,
       this.sufix,
       this.minLines = 1,
       this.maxLines = 1});
@@ -24,7 +24,7 @@ class CustomInputField extends StatelessWidget {
         minLines: minLines,
         validator: (value) {
           if (value!.isEmpty) {
-            return 'Please enter $labelText!';
+            return 'Please enter $hintText!';
           } else {
             return null;
           }
@@ -34,18 +34,15 @@ class CustomInputField extends StatelessWidget {
         controller: controller,
         cursorColor: Colors.black,
         decoration: InputDecoration(
-          filled: true,
-          fillColor: Color(0xffF2F2F2),
-          labelStyle:
-              TextStyle(color: Colors.black),
-          labelText: labelText,
+          hintText: hintText,
+          hintStyle: TextStyle(color: Colors.grey),
+          // filled: true,
+          // fillColor: Colors.white,
           suffixIcon: sufix,
-          focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
+          focusedBorder: UnderlineInputBorder(
               borderSide:
-                  BorderSide(color: Colors.black)),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
+                  BorderSide(color: Color(0xff6368D9),width: 3)),
+          border: UnderlineInputBorder(
               borderSide: BorderSide(
                   color: Color(0xffF2F2F2))),
         ),
