@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:task_planner_app/home_screen.dart';
+import 'package:get/get.dart';
+import 'package:task_planner_app/view/splash_screen.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Task Planner',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomeScreen(),
+      title: 'To-do List',
+        home:  const SplashScreen(),
     );
   }
 }
