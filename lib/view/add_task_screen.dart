@@ -24,9 +24,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   var hour = 1;
   var minute = 0;
   var cdate;
-  var dueDate;
+  String dueDate='';
   String period = 'am';
   int _currentIndex = 0;
+  List<String> selectedDays = [];
 
   String convertTo12HourFormat() {
     // Input format: "HH:mm"
@@ -164,7 +165,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   children: [
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: Text(dueDate!=null?dueDate:'Everyday',style: TextStyle(color: Colors.black,fontSize: 14),),
+                      leading: Text(dueDate!=''?dueDate:'Everyday',style: TextStyle(color: Colors.black,fontSize: 14),),
                       trailing: IconButton(onPressed: () async {
                         DateTime? pickedDate = await showDatePicker(
                             builder: (context, child) => child!,
@@ -187,18 +188,30 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         itemCount: days.length,
                         itemBuilder: (context, index) {
                           return Padding(
-                            padding: EdgeInsets.only(right: 22),
+                            padding: EdgeInsets.only(right: 17),
                             child: SizedBox(
-                              height: 30,
-                              width: 30,
+                              height: 35,
+                              width: 35,
                               child: TextButton(
-                                  onPressed: (){},
+                                  onPressed: (){
+                                    if(selectedDays.contains(days[index])){
+                                      selectedDays.remove(days[index]);
+                                      setState(() {
+
+                                      });
+                                    }else{
+                                      selectedDays.add(days[index]);
+                                      setState(() {
+
+                                      });
+                                    }
+                                  },
                                   style: ButtonStyle(
+                                    backgroundColor: WidgetStatePropertyAll(selectedDays.contains(days[index])?Colors.grey.shade200:Colors.transparent),
                                       padding: WidgetStatePropertyAll(EdgeInsets.zero),
                                       shape: WidgetStatePropertyAll(CircleBorder()),
-                                      side: WidgetStatePropertyAll(BorderSide(color: Colors.black,width: 1))
                                   ),
-                                  child: Text(days[index],style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600))),
+                                  child: Text(days[index],style: TextStyle(color: selectedDays.contains(days[index])?Color(0xff6368D9):Colors.grey,fontWeight: FontWeight.w600,fontSize: 13))),
                             ),
                           );
                         },
@@ -207,15 +220,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     CustomInputField(
                       controller: titleTextController,
                       hintText: 'Title',
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    CustomInputField(
-                      minLines: 1,
-                      maxLines: 15,
-                      controller: descriptionTextController,
-                      hintText: 'Detail',
                     ),
                     const SizedBox(
                       height: 10,

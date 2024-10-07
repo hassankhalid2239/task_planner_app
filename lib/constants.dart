@@ -1,1 +1,3 @@
-List<String> days = ['M','T','W','T','F','S','S'];
+List<String> days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+
