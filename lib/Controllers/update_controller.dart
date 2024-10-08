@@ -1,15 +1,7 @@
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:intl/intl.dart';
 import 'package:task_planner_app/Modals/task_model.dart';
 
-import '../DB/boxes.dart';
-import 'db_controller.dart';
-
-class StateController extends GetxController{
-  final _dbController = Get.put(DbController());
-
+class UpdateController extends GetxController{
   RxInt hour = 1.obs;
   RxInt minute = 0.obs;
   RxString currentDate=''.obs;
@@ -18,8 +10,6 @@ class StateController extends GetxController{
   RxString period = 'am'.obs;
   RxInt currentIndex = 0.obs;
   RxList selectedDays = [].obs;
-
-
 
   void convertTo12HourFormat() {
     // Input format: "HH:mm"
@@ -36,21 +26,31 @@ class StateController extends GetxController{
     currentDate.value = '$hourIn12HourFormat:${minute.toString().padLeft(2, '0')} $period';
   }
 
-  void saveTask(String title){
-    String untilTime= '${hour.value}:${minute.value} ${period.value}';
-    final task = TaskModel(
-        title: title,
-        isCompleted: false,
-        until: '',
-        reminderDays: selectedDays,
-        createdDate: DateFormat('E, d MMM yyyy').format(DateTime.now()),
-        dueTime: untilTime,
-        dueDate: dueDate.value);
-    _dbController.submitTask(task);
+
+  void splitTimeString(String timeString) {
+    List<String> timeParts = timeString.split(" ");
+    List<String> hoursAndMinutes = timeParts[0].split(":");
+
+    // String hours = hoursAndMinutes[0];
+    // String minutes = hoursAndMinutes[1];
+    // String period = timeParts[1];
+    hour.value= int.parse(hoursAndMinutes[0]);
+    minute.value= int.parse(hoursAndMinutes[1]);
+    period.value=timeParts[1];
+    if(period.value=='am'){
+      currentIndex.value=0;
+    }else{
+      currentIndex.value=1;
+    }
   }
+
+  void getData(TaskModel currentTask)async{
+    splitTimeString(currentTask.dueTime);
+    dueDate.value= currentTask.dueDate;
+    selectedDays.value = currentTask.reminderDays;
+  }
+
   void deleteData(TaskModel task)async{
     task.delete();
   }
-
-
 }

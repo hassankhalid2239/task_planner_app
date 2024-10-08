@@ -11,4 +11,6 @@ class DbController extends GetxController{
     box.add(task);
     task.save();
   }
+
+
 }

@@ -159,7 +159,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           if(_stateController.selectedDays.length==7){
                             return Text('Everyday',style: TextStyle(color: Colors.black,fontSize: 14),);
                           }else{
-                            return Text(daysString,style: TextStyle(color: Colors.black,fontSize: 14),);
+                            return Text('Every $daysString',style: TextStyle(color: Colors.black,fontSize: 14),);
                           }
                         }else{
                           return Text('Today',style: TextStyle(color: Colors.black,fontSize: 14),);
@@ -197,13 +197,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               child: Obx((){
                                 return TextButton(
                                     onPressed: (){
-                                      _stateController.dueDate.value='';
-                                      if(_stateController.selectedDays.contains(days[index])){
-                                        _stateController.selectedDays.remove(days[index]);
-
-                                      }else{
-                                        _stateController.selectedDays.add(days[index]);
-                                      }
+                                        if (_stateController.selectedDays
+                                            .contains(days[index])) {
+                                          _stateController.selectedDays.remove(
+                                              days[index]);
+                                        } else {
+                                          _stateController.selectedDays.add(
+                                              days[index]);
+                                        }
+                                        _stateController.dueDate.value='';
                                     },
                                     style: ButtonStyle(
                                       backgroundColor: WidgetStatePropertyAll(_stateController.selectedDays.contains(days[index])?Colors.grey.shade200:Colors.transparent),
