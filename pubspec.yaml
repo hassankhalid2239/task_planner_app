@@ -41,8 +41,15 @@ dependencies:
   date_picker_timeline:
   numberpicker:
   carousel_slider:
+#  Hive Database
+  hive:
+  hive_flutter:
+  path_provider:
 
 dev_dependencies:
+  #  for Hive Database
+  hive_generator:
+  build_runner:
   flutter_test:
     sdk: flutter
 
