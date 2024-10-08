@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:task_planner_app/Modals/task_model.dart';
 import 'package:task_planner_app/constants.dart';
 
+import '../Controllers/state_controller.dart';
 import 'Widgets/custom_textformfield.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -16,41 +18,23 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  // final _taskController = Get.put(TaskController());
+  final _stateController = Get.put(StateController());
   final titleTextController = TextEditingController();
-  final descriptionTextController = TextEditingController();
-  final date = DateFormat('EEE, d MMMM, yyyy, h:mma').format(DateTime.now());
-  final bool isCompleted = false;
-  var hour = 1;
-  var minute = 0;
-  var cdate;
-  String dueDate='';
-  String period = 'am';
-  int _currentIndex = 0;
-  List<String> selectedDays = [];
-
-  String convertTo12HourFormat() {
-    // Input format: "HH:mm"
-    String date= "${DateTime.now().hour}:${DateTime.now().minute}";
-    List<String> parts = date.split(':');
-    int hour = int.parse(parts[0]);
-    int minute = int.parse(parts[1]);
-
-    // Convert to 12-hour format
-    int hourIn12HourFormat = hour % 12 == 0 ? 12 : hour % 12;
-    String period = hour >= 12 ? 'pm' : 'am';
-
-    // Format output as "h:mmam/pm"
-    return '$hourIn12HourFormat:${minute.toString().padLeft(2, '0')}$period';
-  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    cdate = convertTo12HourFormat();
+    _stateController.convertTo12HourFormat();
   }
   @override
   Widget build(BuildContext context) {
+    DateTime dt= DateTime.now();
+    DateTime cDate = DateTime(
+      dt.year,
+      dt.month,
+      dt.day + 1,
+    );
+    print(DateFormat('E, d MMM yyyy').format(cDate));
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -73,26 +57,27 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   children: [
-                    NumberPicker(
-                        minValue: 1,
-                        maxValue: 12,
-                        value: hour,
-                        zeroPad: true,
-                        infiniteLoop: true,
-                        itemWidth: 120,
-                        itemHeight: 80,
-                        textStyle: TextStyle(
-                            fontSize: 25,
-                            // fontWeight: FontWeight.bold,
-                            color: Colors.grey),
-                        selectedTextStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 35,
-                            color: Color(0xff6368D9)),
-                        onChanged: (value) {
-                          hour = value;
-                          setState(() {});
-                        }),
+                    Obx((){
+                      return NumberPicker(
+                          minValue: 1,
+                          maxValue: 12,
+                          value: _stateController.hour.value,
+                          zeroPad: true,
+                          infiniteLoop: true,
+                          itemWidth: 120,
+                          itemHeight: 80,
+                          textStyle: TextStyle(
+                              fontSize: 25,
+                              // fontWeight: FontWeight.bold,
+                              color: Colors.grey),
+                          selectedTextStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 35,
+                              color: Color(0xff6368D9)),
+                          onChanged: (value) {
+                            _stateController.hour.value = value;
+                          });
+                    }),
                     Text(
                       ':',
                       style: TextStyle(
@@ -100,57 +85,58 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 38),
                     ),
-                    NumberPicker(
-                        minValue: 0,
-                        maxValue: 59,
-                        value: minute,
-                        zeroPad: true,
-                        infiniteLoop: true,
-                        itemWidth: 120,
-                        itemHeight: 80,
-                        textStyle: TextStyle(
-                            fontSize: 25,
-                            // fontWeight: FontWeight.bold,
-                            color: Colors.grey),
-                        selectedTextStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 35,
-                            color: Color(0xff6368D9)),
-                        onChanged: (value) {
-                          minute = value;
-                          setState(() {});
-                        }),
+                    Obx((){
+                      return NumberPicker(
+                          minValue: 0,
+                          maxValue: 59,
+                          value: _stateController.minute.value,
+                          zeroPad: true,
+                          infiniteLoop: true,
+                          itemWidth: 120,
+                          itemHeight: 80,
+                          textStyle: TextStyle(
+                              fontSize: 25,
+                              // fontWeight: FontWeight.bold,
+                              color: Colors.grey),
+                          selectedTextStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 35,
+                              color: Color(0xff6368D9)),
+                          onChanged: (value) {
+                            _stateController.minute.value = value;
+                          });
+                    }),
                     SizedBox(height: 200,
                       width: 80,
-                      child: CarouselSlider(
-                        options: CarouselOptions(
-                          enableInfiniteScroll: false,
-                          enlargeStrategy: CenterPageEnlargeStrategy.height,
-                          enlargeCenterPage: true,
-                          scrollDirection: Axis.vertical,
-                          initialPage: _currentIndex,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _currentIndex = index;
+                      child: Obx((){
+                        return CarouselSlider(
+                          options: CarouselOptions(
+                            enableInfiniteScroll: false,
+                            enlargeStrategy: CenterPageEnlargeStrategy.height,
+                            enlargeCenterPage: true,
+                            scrollDirection: Axis.vertical,
+                            initialPage: _stateController.currentIndex.value,
+                            onPageChanged: (index, reason) {
+                              _stateController.currentIndex.value = index;
                               if(index==0){
-                                period='am';
+                                _stateController.period.value='am';
                               }else{
-                                period='pm';
+                                _stateController.period.value='pm';
                               }
-                            });
-                          },
-                        ),
-                        items: [
-                          Text(
-                            'am',
-                            style: TextStyle(color:Color(0xff6368D9),fontSize: 36, fontWeight: FontWeight.bold),
+                            },
                           ),
-                          Text(
-                            'pm',
-                            style: TextStyle(color:Color(0xff6368D9),fontSize: 36, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
+                          items: [
+                            Text(
+                              'am',
+                              style: TextStyle(color:Color(0xff6368D9),fontSize: 36, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              'pm',
+                              style: TextStyle(color:Color(0xff6368D9),fontSize: 36, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -165,7 +151,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   children: [
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: Text(dueDate!=''?dueDate:'Everyday',style: TextStyle(color: Colors.black,fontSize: 14),),
+                      leading: Obx((){
+                        if(_stateController.dueDate.isNotEmpty){
+                          return Text(_stateController.dueDate.value,style: TextStyle(color: Colors.black,fontSize: 14),);
+                        }else if(_stateController.selectedDays.isNotEmpty){
+                          String daysString = _stateController.selectedDays.join(',');
+                          if(_stateController.selectedDays.length==7){
+                            return Text('Everyday',style: TextStyle(color: Colors.black,fontSize: 14),);
+                          }else{
+                            return Text(daysString,style: TextStyle(color: Colors.black,fontSize: 14),);
+                          }
+                        }else{
+                          return Text('Today',style: TextStyle(color: Colors.black,fontSize: 14),);
+                        }
+                      }),
                       trailing: IconButton(onPressed: () async {
                         DateTime? pickedDate = await showDatePicker(
                             builder: (context, child) => child!,
@@ -173,9 +172,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             firstDate: DateTime(1900),
                             lastDate: DateTime(2100));
                         if (pickedDate != null) {
-                          setState(() {
-                            dueDate=DateFormat('EEE, d MMMM').format(pickedDate);
-                          });
+                          if(pickedDate.isAfter(DateTime.now())){
+                            _stateController.dueDate.value=DateFormat('E, d MMM yyyy').format(pickedDate);
+                            _stateController.selectedDays.clear();
+                          }else{
+                            Get.snackbar('Oh!', 'Please Select upcoming date');
+                          }
 
                         }
                       },
@@ -192,26 +194,24 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             child: SizedBox(
                               height: 35,
                               width: 35,
-                              child: TextButton(
-                                  onPressed: (){
-                                    if(selectedDays.contains(days[index])){
-                                      selectedDays.remove(days[index]);
-                                      setState(() {
+                              child: Obx((){
+                                return TextButton(
+                                    onPressed: (){
+                                      _stateController.dueDate.value='';
+                                      if(_stateController.selectedDays.contains(days[index])){
+                                        _stateController.selectedDays.remove(days[index]);
 
-                                      });
-                                    }else{
-                                      selectedDays.add(days[index]);
-                                      setState(() {
-
-                                      });
-                                    }
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor: WidgetStatePropertyAll(selectedDays.contains(days[index])?Colors.grey.shade200:Colors.transparent),
+                                      }else{
+                                        _stateController.selectedDays.add(days[index]);
+                                      }
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor: WidgetStatePropertyAll(_stateController.selectedDays.contains(days[index])?Colors.grey.shade200:Colors.transparent),
                                       padding: WidgetStatePropertyAll(EdgeInsets.zero),
                                       shape: WidgetStatePropertyAll(CircleBorder()),
-                                  ),
-                                  child: Text(days[index],style: TextStyle(color: selectedDays.contains(days[index])?Color(0xff6368D9):Colors.grey,fontWeight: FontWeight.w600,fontSize: 13))),
+                                    ),
+                                    child: Text(days[index],style: TextStyle(color: _stateController.selectedDays.contains(days[index])?Color(0xff6368D9):Colors.grey,fontWeight: FontWeight.w600,fontSize: 13)));
+                              }),
                             ),
                           );
                         },
@@ -228,8 +228,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 )
               ),
               Text('${DateTime.now().hour}:${DateTime.now().minute}',style:TextStyle(color: Colors.black)),
-              Text('${hour}:${minute} ${period}',style:TextStyle(color: Colors.black)),
-              Text(cdate,style:TextStyle(color: Colors.black)),
+              Obx((){
+                return Text('${_stateController.hour.value}:${_stateController.minute.value} ${_stateController.period.value}',style:TextStyle(color: Colors.black));
+              }),
+              Obx((){
+                return Text(_stateController.currentDate.value,style:TextStyle(color: Colors.black));
+              })
             ],
           ),
             ),
@@ -275,6 +279,26 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     backgroundColor:
                     const WidgetStatePropertyAll(Colors.transparent)),
                 onPressed: () {
+                  if(titleTextController.text.isNotEmpty){
+                    if(_stateController.selectedDays.isEmpty&&_stateController.dueDate.isEmpty){
+                      _stateController.dueDate.value=DateFormat('E, d MMM yyyy').format(DateTime.now());
+                    }
+                    _stateController.saveTask(titleTextController.text);
+                    Navigator.pop(context);
+                  }else{
+                    Get.snackbar(
+                      'Required',
+                      'Title is required !',
+                      backgroundColor: Colors.white,
+                      snackPosition: SnackPosition.BOTTOM,
+                      duration: const Duration(seconds: 1),
+                      icon: const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.red,
+                      ),
+                      colorText: Colors.pinkAccent,
+                    );
+                  }
 
                 },
                 child: FittedBox(
@@ -299,14 +323,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   void submitData() async {
-    if (titleTextController.text.isNotEmpty &&
-        descriptionTextController.text.isNotEmpty) {
+    if (titleTextController.text.isNotEmpty ) {
       //add task
       // await _addTaskToDb();
       // _taskController.getTasks();
       Get.back();
-    } else if (titleTextController.text.isEmpty ||
-        descriptionTextController.text.isEmpty) {
+    } else if (titleTextController.text.isEmpty) {
       Get.snackbar(
         'Required',
         'All fields are required !',
